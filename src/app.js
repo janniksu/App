@@ -65,6 +65,8 @@ var HelloWorldLayer = cc.Layer.extend({
             )
         );
         return true;
+        
+        //comment
     }
 });
 
