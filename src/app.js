@@ -1,5 +1,7 @@
 
 var HelloWorldLayer = cc.Layer.extend({
+	
+	//wtf this is interesting
     sprite:null,
     ctor:function () {
         //////////////////////////////
@@ -66,7 +68,7 @@ var HelloWorldLayer = cc.Layer.extend({
         );
         return true;
         
-        //comment
+        
     }
 });
 
