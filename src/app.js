@@ -24,8 +24,55 @@ var HelloWorldLayer = cc.Layer.extend({
         zombieSprite.setAnchorPoint(cc.p(0.5,0.5));
         zombieSprite.setPosition(cc.p(400,400));
         zombieSprite._setWidth(zombieSprite._getWidth()/2);
+     
         
         this.addChild(zombieSprite);
+        
+        var move_action2 = cc.MoveTo.create(2,cc.p(800,800));
+        zombieSprite.runAction(move_action2);
+        
+        if(cc.sys.capabilities.hasOwnProperty('touches')){
+        	cc.eventManager.addListener({
+        		event: cc.EventListener.TOUCH_ONE_BY_ONE,
+        		
+        		onTouchBegan:function(touch,event)
+        		{
+        			
+        			
+        			
+        		},
+        		
+        		onTouchMoved:function(touch, event){
+        			
+        		},
+        		
+        		onTouchEnded:function(touch,event){
+        			var touchLocation = cc.p(touch.getLocationX(),touch.getLocationY());
+        			var move_action = cc.MoveTo.create(2,touchLocation);
+        			zombieSprite.runAction(move_action);
+        			return true;
+        		}
+        	},this);
+        }
+        else{
+        	if(cc.sys.capabilities.hasOwnProperty('mouse')){
+        		cc.eventManager.addListener({
+        			event: cc.EventListener.MOUSE,
+        			
+        		onMouseUp: function(event){
+        			if(event.getButton() == cc.EventMouse.BUTTON_LEFT){
+        				cc.log(event.getLocationX());
+        				cc.log(event.getLocationY());
+        				var touchLocation = cc.p(event.getLocationX(),event.getLocationY());
+        				var move_action = cc.MoveTo.create(2,touchLocation);
+        				move_action._speed = 2;
+        				zombieSprite.runAction(move_action);
+        			}
+        		}
+        			
+        		},this);
+        	}
+        }
         
     }
 });
