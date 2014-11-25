@@ -2010,6 +2010,8 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
     update: function (dt) {
         if (this._componentContainer && !this._componentContainer.isEmpty())
             this._componentContainer.visit(dt);
+        
+        
     },
 
     /**

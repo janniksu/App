@@ -1,3 +1,8 @@
+var moveZombiePerSeconds = 600;
+var moveDT = 0.0;
+var lastUpdateTime = 0.0;
+var zombieSprite;
+var velocity = cc.p(0,0);
 
 var HelloWorldLayer = cc.Layer.extend({
 	
@@ -7,7 +12,7 @@ var HelloWorldLayer = cc.Layer.extend({
         //////////////////////////////
         // 1. super init first
         this._super();
-
+        
         /////////////////////////////
         // 2. add a menu item with "X" image, which is clicked to quit the program
         //    you may modify it.
@@ -20,10 +25,10 @@ var HelloWorldLayer = cc.Layer.extend({
         
         this.addChild(background);
         
-        var zombieSprite = cc.Sprite(res.zombie1_png);
+        zombieSprite = cc.Sprite(res.zombie1_png);
         zombieSprite.setAnchorPoint(cc.p(0.5,0.5));
         zombieSprite.setPosition(cc.p(400,400));
-        zombieSprite._setWidth(zombieSprite._getWidth()/2);
+        zombieSprite.scheduleUpdate();
      
         
         this.addChild(zombieSprite);
@@ -61,12 +66,10 @@ var HelloWorldLayer = cc.Layer.extend({
         			
         		onMouseUp: function(event){
         			if(event.getButton() == cc.EventMouse.BUTTON_LEFT){
-        				cc.log(event.getLocationX());
-        				cc.log(event.getLocationY());
+        				
+        				
         				var touchLocation = cc.p(event.getLocationX(),event.getLocationY());
-        				var move_action = cc.MoveTo.create(2,touchLocation);
-        				move_action._speed = 2;
-        				zombieSprite.runAction(move_action);
+        				moveZombieTowards(touchLocation);
         			}
         		}
         			
@@ -74,7 +77,11 @@ var HelloWorldLayer = cc.Layer.extend({
         	}
         }
         
-    }
+    },
+    
+ 
+    
+   
 });
 
 var HelloWorldScene = cc.Scene.extend({
@@ -82,7 +89,67 @@ var HelloWorldScene = cc.Scene.extend({
         this._super();
         var layer = new HelloWorldLayer();
         this.addChild(layer);
-    }
+        this.scheduleUpdate();
+    },
+    
+    
+    	update: function (dt) {
+    		
+    		moveDT = dt;
+    		
+    		
+    		moveSprite(zombieSprite, velocity);
+    		checkBoundsZombie();
+    		
+    		if (this._componentContainer && !this._componentContainer.isEmpty())
+    			this._componentContainer.visit(dt);
+    		
+    		
+    	}
+    
+
+	
 });
 
+function moveSprite(sprite, velocityX){
+	var amountToMove = cc.p(velocityX.x*moveDT,velocityX.y*moveDT);
+	
+	sprite.setPosition ( cc.p(sprite.getPosition().x + amountToMove.x, sprite.getPosition().y + amountToMove.y));
+}
+
+
+function moveZombieTowards(point){
+	var offset = cc.p(point.x-zombieSprite.getPosition().x,point.y-zombieSprite.getPosition().y);
+	
+	var length = Math.sqrt(offset.x*offset.x + offset.y * offset.y);
+	cc.log("length " + length);
+	var direction = cc.p(offset.x/length,offset.y/length);
+	
+	velocity = cc.p(direction.x*moveZombiePerSeconds,direction.y * moveZombiePerSeconds);
+}
+
+function checkBoundsZombie(){
+	var bottomLeft = cc.p(0,0);
+	var topRight = cc.p(cc.winSize.width,cc.winSize.height);
+	
+	if(zombieSprite.getPositionX() <= bottomLeft.x){
+		zombieSprite.setPositionX(bottomLeft.x);
+		velocity.x = -velocity.x;
+	}
+	
+	if(zombieSprite.getPositionX()>=topRight.x){
+		zombieSprite.setPositionX(topRight.x);
+		velocity.x = -velocity.x;
+	}
+	
+	if (zombieSprite.getPositionY() <= bottomLeft.y) { 
+		zombieSprite.setPositionY(bottomLeft.y);
+		velocity.y = -velocity.y
+	}
+	
+	if (zombieSprite.getPositionY() >= topRight.y) { 
+		zombieSprite.setPositionY(topRight.y);
+		velocity.y = -velocity.y
+	}
+}
 
